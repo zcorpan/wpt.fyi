@@ -27,9 +27,11 @@ info "Installing dependencies..."
 cd ${WPTD_PATH}; make go_deps;
 
 # Create a name for this version
-BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-USER="$(git remote -v get-url origin | sed -E 's#(https?:\/\/|git@)github.com(\/|:)##' | sed 's#/.*$##')"
-VERSION="${USER}-${BRANCH_NAME}"
+BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:-"$(git rev-parse --abbrev-ref HEAD)"}
+USER="$(git remote -v get-url origin | sed -E 's#(https?:\/\/|git@)github.com(\/|:)##' | sed 's#/.*$##')-"
+if [[ "${USER}" == "web-platform-tests" ]]; then USER=""; fi
+
+VERSION="${USER}${BRANCH_NAME}"
 PROMOTE="--no-promote"
 
 if [[ ${PRODUCTION} == 'true' ]]
@@ -64,7 +66,7 @@ then
 fi
 
 info "Executing..."
-${COMMAND}
+${COMMAND} || exit $?
 
 # Comment on the PR if running from Travis.
 if [[ "${TRAVIS_REPO_SLUG}" != "" ]];
