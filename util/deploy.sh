@@ -58,6 +58,7 @@ COMMAND="gcloud app deploy ${PROMOTE} ${QUIET_FLAG} --version=${VERSION} ${WPTD_
 
 info "Deploy command:\n${COMMAND}"
 if [[ "${QUIET}" != "true" ]]
+then
     confirm "Execute?"
     if [ "${?}" != "0" ]; then exit "${?}"; fi
 fi
@@ -87,4 +88,4 @@ then
     fi
 fi
 
- exit 0	
+ exit 0
