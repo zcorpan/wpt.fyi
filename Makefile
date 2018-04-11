@@ -62,4 +62,4 @@ dev_data:
 webapp_deploy_staging:
 	gcloud config set project wptdashboard
 	gcloud auth activate-service-account --key-file $(WPTD_PATH)/client-secret.json
-	cd $(WPTD_PATH)/git; ./git-deploy -q
+	cd $(WPTD_PATH); util/deploy.sh -q
