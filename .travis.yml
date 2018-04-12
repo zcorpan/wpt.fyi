@@ -83,6 +83,8 @@ install:
       export DISPLAY=:99.0
       sh -e /etc/init.d/xvfb start
     fi
+  - | # Set the user as home dir owner in the docker instance
+    docker exec -u 0:0 "${DOCKER_INSTANCE}" chown -R $(id -u $USER):$(id -g $USER) /home/jenkins
   - | # Install any dependencies
     if [ "${MAKE_DEPS_TARGET}" != "" ]; then
       docker exec -t -u 0:0 "${DOCKER_INSTANCE}" make "${MAKE_DEPS_TARGET}" || exit $?
@@ -90,12 +92,11 @@ install:
   - | # Deploy PR to staging environment
     if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
       OUTPUT=$(docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH}) || EXIT_CODE=$?
-      echo "${OUTPUT}"; if [ -n ${EXIT_CODE} ]; then exit ${EXIT_CODE}; fi
+      echo "${OUTPUT}";
+      if [ -n ${EXIT_CODE} ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(echo "${OUTPUT}" | grep -Po 'Deployed to \K.*$')
       util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
     fi
-  - | # Set the home dir in the docker instance
-    docker exec -u 0:0 "${DOCKER_INSTANCE}" chown -R $(id -u $USER):$(id -g $USER) /home/jenkins
 
 script:
   - | # Run tests
