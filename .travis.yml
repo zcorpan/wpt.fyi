@@ -95,7 +95,9 @@ install:
       echo "${OUTPUT}"; sync
       if [ -n ${EXIT_CODE} ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(echo "${OUTPUT}" | grep -Po 'Deployed to \K.*$')
+      echo $DEPLOYED_URL # TODO: delete me
       util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
+      echo finished # TODO: delete me
     fi
 
 script:
