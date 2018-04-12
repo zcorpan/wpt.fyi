@@ -32,12 +32,7 @@ matrix:
         - MAKE_TEST_TARGET=go_test
     - language: go
       env:
-        - > # Note: in YAML, > collapses into one line, single spaces.
-          MAKE_DEPS_TARGET="webapp_deploy_staging
-              BRANCH=${TRAVIS_BRANCH}
-              REPO_SLUG=${TRAVIS_REPO_SLUG}
-              PULL_REQUEST=${TRAVIS_PULL_REQUEST}
-              GITHUB_TOKEN=${GITHUB_TOKEN}"
+        - MAKE_DEPS_TARGET=webapp_deploy_staging
     # Disabled while this is not in use.
     # - language: python
     #   env:
@@ -67,6 +62,10 @@ before_install: |
       -v /etc/group:/etc/group:ro \
       -v /etc/passwd:/etc/passwd:ro \
       -v "$(pwd)":/home/jenkins/wpt.fyi \
+      -e BRANCH=${TRAVIS_BRANCH} \
+      -e REPO_SLUG=${TRAVIS_REPO_SLUG} \
+      -e PULL_REQUEST=${TRAVIS_PULL_REQUEST} \
+      -e GITHUB_TOKEN=${GITHUB_TOKEN} \
       -u $(id -u $USER):$(id -g $USER) \
       --name "${DOCKER_INSTANCE}" \
       "${DOCKER_IMAGE}"
