@@ -19,7 +19,13 @@ function warn() {
 }
 
 function error() {
-  printf "\n${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  ERRR  ]  $1${NC}\n"
+  printf "\n${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  ERR  ]  $1${NC}\n"
+}
+
+# Usage: fatal "Message" [exitCode]
+function fatal() {
+  printf "\n${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  FATAL  ]  $1${NC}\n"
+  exit ${2:-1}
 }
 
 function confirm() {

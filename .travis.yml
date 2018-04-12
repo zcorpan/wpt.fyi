@@ -32,7 +32,7 @@ matrix:
         - MAKE_TEST_TARGET=go_test
     - language: go
       env:
-        - MAKE_DEPS_TARGET=webapp_deploy_staging
+        - MAKE_DEPLOY_TARGET=webapp_deploy_staging
     # Disabled while this is not in use.
     # - language: python
     #   env:
@@ -89,6 +89,12 @@ install: |
 
   if [ "${MAKE_DEPS_TARGET}" != "" ]; then
     docker exec -t -u 0:0 "${DOCKER_INSTANCE}" make "${MAKE_DEPS_TARGET}" || exit $?
+  fi
+
+  if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
+    OUTPUT=$(docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}") || exit $?
+    DEPLOYED_URL=$(grep -Po 'Deployed to \K.*$')
+    util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
   fi
 
   docker exec -u 0:0 "${DOCKER_INSTANCE}" chown -R $(id -u $USER):$(id -g $USER) /home/jenkins

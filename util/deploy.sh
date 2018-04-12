@@ -10,21 +10,19 @@ source "${REPO_DIR}/util/path.sh"
 WPTD_PATH=${WPTD_PATH:-$(absdir ${REPO_DIR})}
 
 usage() {
-  USAGE="Usage: deploy.sh [-p] [-q] [-b] [-r] [-i] [-h]
+  USAGE="Usage: deploy.sh [-p] [-q] [-b] [-r] [-i] [-d] [-h]
     -p Production deploy
     -q Quiet / no user prompts
     -b Branch name - defaults to current Git branch
     -r Repo slug (e.g. web-platform-tests/wpt.fyi), for making a Github comment
     -i Issue (PR) number, for making a Github comment
     -g Github token, for making a Github comment
+    -d Print debug info
     -h Show (this) help information"
   echo "${USAGE}"
 }
 
-PRODUCTION='false'
-QUIET='false'
-
-while getopts ':b:phqr:i:g:' flag; do
+while getopts ':b:dphqr:i:g:' flag; do
   case "${flag}" in
     b) BRANCH_NAME="${OPTARG}" ;;
     p) PRODUCTION='true' ;;
@@ -32,12 +30,13 @@ while getopts ':b:phqr:i:g:' flag; do
     r) REPO_SLUG="${OPTARG}" ;;
     i) PULL_REQUEST="${OPTARG}" ;;
     g) GITHUB_TOKEN="${OPTARG}" ;;
+    d) DEBUG='true' ;;
     h|*) usage && exit 0;;
   esac
 done
 
 # Ensure dependencies are installed.
-info "Installing dependencies..."
+if [[ -n ${DEBUG} ]]; then info "Installing dependencies..."; fi
 cd ${WPTD_PATH}; make go_deps;
 
 # Create a name for this version
@@ -48,12 +47,12 @@ if [[ "${USER}" == "web-platform-tests-" ]]; then USER=""; fi
 VERSION="${USER}${BRANCH_NAME}"
 PROMOTE="--no-promote"
 
-if [[ ${PRODUCTION} == 'true' ]]
+if [[ -n ${PRODUCTION} ]]
 then
-  info "Producing production configuration..."
+  if [[ -n ${DEBUG} ]]; then info "Producing production configuration..."; fi
   if [[ "${USER}" != "web-platform-tests" ]]
   then
-    if [[ "${QUIET}" != "true" ]]
+    if [[ -z ${QUIET} ]]
     then
       confirm "Are you sure you want to be deploying a non-web-platform-tests repo (${USER})?"
       if [ "${?}" != "0" ]; then exit "${?}"; fi
@@ -64,7 +63,7 @@ then
   PROMOTE="--promote"
 fi
 
-if [[ "${QUIET}" == "true" ]]
+if [[ -n ${QUIET} ]]
 then
     QUIET_FLAG="-q"
 else
@@ -72,36 +71,18 @@ else
 fi
 COMMAND="gcloud app deploy ${PROMOTE} ${QUIET_FLAG} --version=${VERSION} ${WPTD_PATH}/webapp"
 
-info "Deploy command:\n${COMMAND}"
-if [[ "${QUIET}" != "true" ]]
+if [[ -n ${DEBUG} ]]; then info "Deploy command:\n${COMMAND}"; fi
+if [[ -z ${QUIET} ]]
 then
     confirm "Execute?"
     if [ "${?}" != "0" ]; then exit "${?}"; fi
 fi
 
-info "Executing..."
+if [[ -n ${DEBUG} ]]; then info "Executing..."; fi
 ${COMMAND}
 
 # Comment on the PR if running from Travis.
-if [[ "${REPO_SLUG}" != "" && "${PULL_REQUEST}" != "" && "${GITHUB_TOKEN}" != "" ]];
-then
-    info "Checking whether ${REPO_SLUG} #${PULL_REQUEST} mentions the deployed URL on GitHub..."
-    DEPLOYED_URL=$(gcloud app versions describe ${VERSION} -s default | grep -Po 'versionUrl:\K.*$')
-    if [[ "${DEPLOYED_URL}" != "" ]];
-    then
-        # Only make a comment mentioning the deploy if no other comment has posted the URL yet.
-        STAGING_LINK=$(curl -s -X GET https://api.github.com/repos/${REPO_SLUG}/issues/${PULL_REQUEST}/comments | grep ${DEPLOYED_URL})
-        if [[ ${STAGING_LINK} == "" ]];
-        then
-            info "Commenting URL to GitHub..."
-            curl -H "Authorization: token ${GITHUB_TOKEN}" \
-                 -X POST \
-                 -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${DEPLOYED_URL}\"}" \
-                 https://api.github.com/repos/${REPO_SLUG}/issues/${PULL_REQUEST}/comments
-        else
-            info "Found existing comment mentioning link:\n${STAGING_LINK}"
-        fi
-    fi
-fi
+DEPLOYED_URL=$(gcloud app versions describe ${VERSION} -s default | grep -Po 'versionUrl:\K.*$')
+echo "Deployed to ${DEPLOYED_URL}"
 
- exit 0
+exit 0
