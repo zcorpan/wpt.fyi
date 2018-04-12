@@ -111,3 +111,4 @@ script:
 after_script:
   - docker stop "${DOCKER_INSTANCE}"
   - docker rm "${DOCKER_INSTANCE}"
+  - sleep 1
