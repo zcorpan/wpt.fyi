@@ -33,11 +33,11 @@ matrix:
     - language: go
       env:
         - > # Note: in YAML, > collapses into one line, single spaces.
-          MAKE_DEPS_TARGET=webapp_deploy_staging
+          MAKE_DEPS_TARGET="webapp_deploy_staging
               BRANCH=${TRAVIS_BRANCH}
               REPO_SLUG=${TRAVIS_REPO_SLUG}
               PULL_REQUEST=${TRAVIS_PULL_REQUEST}
-              GITHUB_TOKEN=${GITHUB_TOKEN}
+              GITHUB_TOKEN=${GITHUB_TOKEN}"
     # Disabled while this is not in use.
     # - language: python
     #   env:
