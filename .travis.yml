@@ -92,7 +92,7 @@ install:
   - | # Deploy PR to staging environment
     if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
       OUTPUT=$(docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH}) || EXIT_CODE=$?
-      echo "${OUTPUT}";
+      echo "${OUTPUT}"; sync
       if [ -n ${EXIT_CODE} ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(echo "${OUTPUT}" | grep -Po 'Deployed to \K.*$')
       util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
@@ -111,4 +111,3 @@ script:
 after_script:
   - docker stop "${DOCKER_INSTANCE}"
   - docker rm "${DOCKER_INSTANCE}"
-  - sleep 1
