@@ -2,6 +2,8 @@
 
 # Helper script for using a standardized version flag when deploying.
 
+set -e
+
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
 source "${REPO_DIR}/util/path.sh"
@@ -66,7 +68,7 @@ then
 fi
 
 info "Executing..."
-${COMMAND} || exit $?
+${COMMAND}
 
 # Comment on the PR if running from Travis.
 if [[ "${TRAVIS_REPO_SLUG}" != "" ]];
