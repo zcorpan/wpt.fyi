@@ -15,18 +15,16 @@ if [[ -z ${TRAVIS_REPO_SLUG} ]]; then fatal "Travis Repo slug (user/repo) is req
 if [[ -z ${TRAVIS_PULL_REQUEST} ]]; then fatal "Travis pull request is required"; fi
 
 info "Checking whether ${TRAVIS_REPO_SLUG} #${TRAVIS_PULL_REQUEST} mentions the deployed URL on GitHub..."
-if [[ "${DEPLOYED_URL}" != "" ]];
+# Only make a comment mentioning the deploy if no other comment has posted the URL yet.
+STAGING_LINK=$(curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | grep ${DEPLOYED_URL})
+if [[ ${STAGING_LINK} == "" ]];
 then
-    # Only make a comment mentioning the deploy if no other comment has posted the URL yet.
-    STAGING_LINK=$(curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | grep ${DEPLOYED_URL})
-    if [[ ${STAGING_LINK} == "" ]];
-    then
-        info "Commenting URL to GitHub..."
-        curl -H "Authorization: token ${GITHUB_TOKEN}" \
-              -X POST \
-              -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${DEPLOYED_URL}\"}" \
-              https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments
-    else
-        info "Found existing comment mentioning link:\n${STAGING_LINK}"
-    fi
+    info "Commenting URL to GitHub..."
+    curl -H "Authorization: token ${GITHUB_TOKEN}" \
+          -X POST \
+          -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${DEPLOYED_URL}\"}" \
+          -vv \
+          https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments
+else
+    info "Found existing comment mentioning link:\n${STAGING_LINK}"
 fi
