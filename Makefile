@@ -31,10 +31,6 @@ GO_FILES := $(wildcard $(WPTD_PATH)/**/*.go)
 GO_FILES := $(filter-out $(wildcard $(WPTD_PATH)/generated/**/*.go), $(GO_FILES))
 GO_FILES := $(filter-out $(wildcard $(WPTD_PATH)/vendor/**/*.go), $(GO_FILES))
 
-FLAG_REPO_SLUG := $(if $(REPO_SLUG), -r $(REPO_SLUG), )
-FLAG_PULL_REQUEST := $(if $(PULL_REQUEST), -i $(PULL_REQUEST), )
-FLAG_GITHUB_TOKEN := $(if $(GITHUB_TOKEN), -g $(GITHUB_TOKEN), )
-
 build: go_deps
 
 test: py_test go_test
@@ -66,7 +62,7 @@ dev_data:
 webapp_deploy_staging: env-BRANCH_NAME
 	gcloud config set project wptdashboard
 	gcloud auth activate-service-account --key-file $(WPTD_PATH)/client-secret.json
-	cd $(WPTD_PATH); util/deploy.sh -q -b $(BRANCH_NAME) $(FLAG_REPO_SLUG) $(FLAG_PULL_REQUEST) $(FLAG_GITHUB_TOKEN)
+	cd $(WPTD_PATH); util/deploy.sh -q -b $(BRANCH_NAME)
 
 env-%:
 	@ if [[ "${${*}}" = "" ]]; then echo "Environment variable $* not set"; exit 1; fi
