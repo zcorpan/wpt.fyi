@@ -91,10 +91,10 @@ install:
     fi
   - | # Deploy PR to staging environment
     if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
-      OUTPUT=$(docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH}) || EXIT_CODE=$?
-      echo "${OUTPUT}"
-      if [ -n ${EXIT_CODE} ]; then exit ${EXIT_CODE}; fi
-      DEPLOYED_URL=$(echo "${OUTPUT}" | grep -Po 'Deployed to \K.*$')
+      TEMP_FILE=$(mktemp)
+      docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH} | tee ${TEMP_FILE} || exit ?!
+      if [ -n ${PIPESTATUS[0]} ]; then exit ${PIPESTATUS[0]}; fi
+      DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$')
       echo $DEPLOYED_URL # TODO: delete me
       util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
       echo finished # TODO: delete me
@@ -110,6 +110,3 @@ script:
     if [ "${WCT}" == "1" ]; then
       cd webapp && npm test
     fi
-
-after_script:
-  - sleep 15
