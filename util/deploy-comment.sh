@@ -29,11 +29,12 @@ fi
 info "Checking whether ${TRAVIS_REPO_SLUG} #${TRAVIS_PULL_REQUEST} mentions the deployed URL on GitHub..."
 # Only make a comment mentioning the deploy if no other comment has posted the URL yet.
 
-curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | tee ${TEMP_CURL_FILE:=$(mktemp)}
+TEMP_CURL_FILE=$(mktemp)
+curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | tee ${TEMP_CURL_FILE}
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
 STAGING_LINK=$(cat ${TEMP_CURL_FILE} | grep ${DEPLOYED_URL})
-if [[ "${STAGING_LINK}" == "" ]];
+if [[ -z "${STAGING_LINK}" ]];
 then
     info "Commenting URL to GitHub..."
     curl -H "Authorization: token ${GITHUB_TOKEN}" \
