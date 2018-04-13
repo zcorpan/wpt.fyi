@@ -110,3 +110,6 @@ script:
     if [ "${WCT}" == "1" ]; then
       cd webapp && npm test
     fi
+
+after_script:
+  - sleep 15
