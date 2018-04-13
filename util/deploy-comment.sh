@@ -4,6 +4,7 @@
 # from Travis CI. Also see deploy.sh
 
 set -e
+set -o pipefail
 
 echo hello
 

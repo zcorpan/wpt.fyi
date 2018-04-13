@@ -94,7 +94,7 @@ install:
       TEMP_FILE=$(mktemp)
       docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH} | tee ${TEMP_FILE}
       echo "docker's out"
-      if [ -n ${PIPESTATUS[0]} ]; then exit ${PIPESTATUS[0]}; fi
+      if [ "${EXIT_CODE:=PIPESTATUS[0]}" != "0" ]; then exit ${EXIT_CODE}; fi
       echo "gonna grep..."
       DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$') || exit $?
       echo "Deployed URL is... $DEPLOYED_URL"
