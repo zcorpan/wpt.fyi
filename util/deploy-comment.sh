@@ -6,8 +6,6 @@
 set -e
 set -o pipefail
 
-echo hello
-
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
 
