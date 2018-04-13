@@ -88,6 +88,8 @@ install:
     if [ "${MAKE_DEPS_TARGET}" != "" ]; then
       docker exec -t -u 0:0 "${DOCKER_INSTANCE}" make "${MAKE_DEPS_TARGET}" || exit $?
     fi
+
+script:
   - | # Deploy PR to staging environment
     if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
       echo "Copying output to ${TEMP_FILE:=$(mktemp)}"
@@ -95,10 +97,7 @@ install:
       if [ "${EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$')
       util/deploy-comment.sh ${DEPLOYED_URL}
-      sync # Ensure the logs make it out alive
     fi
-
-script:
   - | # Run tests
     if [ "${MAKE_TEST_TARGET}" != "" ]; then
       docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_TEST_TARGET}"
