@@ -33,9 +33,12 @@ TEMP_CURL_FILE=$(mktemp)
 curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | tee ${TEMP_CURL_FILE}
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
+echo a
 STAGING_LINK=$(cat ${TEMP_CURL_FILE} | grep ${DEPLOYED_URL})
+echo b
 if [[ -z "${STAGING_LINK}" ]];
 then
+    echo c
     info "Commenting URL to GitHub..."
     curl -H "Authorization: token ${GITHUB_TOKEN}" \
           -X POST \
@@ -43,5 +46,8 @@ then
           -vv \
           https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments
 else
+    echo d
     info "Found existing comment mentioning link:\n${STAGING_LINK}"
 fi
+
+echo e
