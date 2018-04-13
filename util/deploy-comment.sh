@@ -30,11 +30,15 @@ info "Checking whether ${TRAVIS_REPO_SLUG} #${TRAVIS_PULL_REQUEST} mentions the 
 # Only make a comment mentioning the deploy if no other comment has posted the URL yet.
 
 TEMP_CURL_FILE=$(mktemp)
-curl -s -X GET https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments | tee ${TEMP_CURL_FILE}
+curl -s \
+     -H "Authorization: token ${GITHUB_TOKEN}" \
+     -X GET \
+     https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments \
+     | tee ${TEMP_CURL_FILE}
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
 echo a
-STAGING_LINK=$(cat ${TEMP_CURL_FILE} | grep ${DEPLOYED_URL})
+STAGING_LINK=$(cat "${TEMP_CURL_FILE}" | grep "${DEPLOYED_URL}")
 echo b
 if [[ -z "${STAGING_LINK}" ]];
 then
@@ -51,3 +55,4 @@ else
 fi
 
 echo e
+sync
