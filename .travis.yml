@@ -92,15 +92,10 @@ install:
   - | # Deploy PR to staging environment
     if [ "${MAKE_DEPLOY_TARGET}" != "" ]; then
       echo "Copying output to ${TEMP_FILE:=$(mktemp)}"
-      echo foo | tee ${TEMP_FILE}
-      docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH} | tee ${TEMP_FILE}
-      echo "docker's out"
+      docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH} | tee ${TEMP_FILE}
       if [ "${EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then exit ${EXIT_CODE}; fi
-      echo "gonna grep..."
-      DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$') || exit $?
-      echo "Deployed URL is... $DEPLOYED_URL"
-      util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
-      echo finished # TODO: delete me
+      DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$')
+      util/deploy-comment.sh ${DEPLOYED_URL}
       sync # Ensure the logs make it out alive
     fi
 
