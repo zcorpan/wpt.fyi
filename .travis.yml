@@ -94,7 +94,7 @@ install:
       TEMP_FILE=$(mktemp)
       docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_BRANCH} | tee ${TEMP_FILE}
       if [ -n ${PIPESTATUS[0]} ]; then exit ${PIPESTATUS[0]}; fi
-      DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$')
+      DEPLOYED_URL=$(cat ${TEMP_FILE} | grep -Po 'Deployed to \K.*$') || exit $?
       echo $DEPLOYED_URL # TODO: delete me
       util/deploy-comment.sh ${DEPLOYED_URL} || exit $?
       echo finished # TODO: delete me
