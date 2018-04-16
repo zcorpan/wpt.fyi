@@ -12,7 +12,7 @@ source "${REPO_DIR}/util/logging.sh"
 if [[ -z ${GITHUB_TOKEN} ]]; then fatal "GitHub Token is required"; fi
 
 DEPLOYED_URL="$1"
-if [[ -z "${DEPLOYED_URL}"" ]];
+if [[ -z "${DEPLOYED_URL}" ]];
 then fatal "Deployed URL is required";
 else info "Deployed URL: ${DEPLOYED_URL}";
 fi
