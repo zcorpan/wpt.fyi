@@ -3,14 +3,14 @@
 # Helper script for posting a GitHub comment pointing to the deployed environment,
 # from Travis CI. Also see deploy.sh
 
-DEPLOYED_URL=$(echo $1)
+STAGING_URL=$1
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
 
-if [[ -z "${DEPLOYED_URL}" ]];
+if [[ -z "${STAGING_URL}" ]];
 then fatal "Deployed URL is required";
-else debug "Deployed URL: ${DEPLOYED_URL}";
+else debug "Deployed URL: ${STAGING_URL}";
 fi
 if [[ -z "${GITHUB_TOKEN}" ]];
 then fatal "GitHub Token is required";
@@ -40,7 +40,7 @@ curl -s \
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
 echo a
-STAGING_LINK=$(grep "${DEPLOYED_URL}" ${TEMP_CURL_FILE})
+STAGING_LINK=$(grep "${STAGING_URL}" ${TEMP_CURL_FILE})
 echo b
 if [[ -z "${STAGING_LINK}" ]];
 then
@@ -48,7 +48,7 @@ then
     info "Commenting URL to GitHub..."
     curl -H "Authorization: token ${GITHUB_TOKEN}" \
           -X POST \
-          -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${DEPLOYED_URL}\"}" \
+          -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${STAGING_URL}\"}" \
           -vv \
           https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments
 else
