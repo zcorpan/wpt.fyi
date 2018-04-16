@@ -3,9 +3,6 @@
 # Helper script for posting a GitHub comment pointing to the deployed environment,
 # from Travis CI. Also see deploy.sh
 
-set -e
-set -o pipefail
-
 DEPLOYED_URL="$1"
 
 REPO_DIR="$(dirname "$0")/.."
@@ -27,6 +24,9 @@ if [[ -z "${TRAVIS_PULL_REQUEST}" ]];
 then fatal "Travis pull request is required";
 else debug "Travis pull request: ${TRAVIS_PULL_REQUEST}";
 fi
+
+set -e
+set -o pipefail
 
 info "Checking whether ${TRAVIS_REPO_SLUG} #${TRAVIS_PULL_REQUEST} mentions the deployed URL on GitHub..."
 # Only make a comment mentioning the deploy if no other comment has posted the URL yet.
