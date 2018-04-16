@@ -4,6 +4,7 @@
 # from Travis CI. Also see deploy.sh
 
 STAGING_URL=$1
+echo ${STAGING_URL} | od -vAn -tax1
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
