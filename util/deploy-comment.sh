@@ -3,7 +3,7 @@
 # Helper script for posting a GitHub comment pointing to the deployed environment,
 # from Travis CI. Also see deploy.sh
 
-STAGING_URL="$(echo -n $1)"
+STAGING_URL="$(echo -n \"$1\")"
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
@@ -40,7 +40,7 @@ curl -s \
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
 echo b
-if [[ -z "$(grep "${STAGING_URL}" ${TEMP_CURL_FILE})" ]];
+if [[ -z "$(grep ${STAGING_URL} ${TEMP_CURL_FILE})" ]];
 then
     echo c
     info "Commenting URL to GitHub..."
