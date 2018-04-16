@@ -7,28 +7,28 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 function verbose() {
-  printf "\n${GRAY}[  $(date +'%Y-%m-%d %H:%M:%S')  VERB  ]  $1${NC}"
+  printf "${GRAY}[  $(date +'%Y-%m-%d %H:%M:%S')  VERB  ]  $1${NC}\n"
 }
 
 function debug() {
-  printf "\n${GRAY}[  $(date +'%Y-%m-%d %H:%M:%S')  DEBUG ]  $1${NC}"
+  printf "${GRAY}[  $(date +'%Y-%m-%d %H:%M:%S')  DEBUG ]  $1${NC}\n"
 }
 
 function info() {
-  printf "\n${GREEN}[  $(date +'%Y-%m-%d %H:%M:%S')  INFO  ]  $1${NC}"
+  printf "${GREEN}[  $(date +'%Y-%m-%d %H:%M:%S')  INFO  ]  $1${NC}\n"
 }
 
 function warn() {
-  printf "\n${YELLOW}[  $(date +'%Y-%m-%d %H:%M:%S')  WARN  ]  $1${NC}"
+  printf "${YELLOW}[  $(date +'%Y-%m-%d %H:%M:%S')  WARN  ]  $1${NC}\n"
 }
 
 function error() {
-  printf "\n${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  ERROR ]  $1${NC}"
+  printf "${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  ERROR ]  $1${NC}\n"
 }
 
 # Usage: fatal "Message" [exitCode]
 function fatal() {
-  printf "\n${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  FATAL ]  $1${NC}\n"
+  printf "${RED}[  $(date +'%Y-%m-%d %H:%M:%S')  FATAL ]  $1${NC}\n"
   exit ${2:-1}
 }
 

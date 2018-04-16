@@ -3,15 +3,10 @@
 # Helper script for posting a GitHub comment pointing to the deployed environment,
 # from Travis CI. Also see deploy.sh
 
-DEPLOYED_URL="$1"
-echo $0
-echo $1
+DEPLOYED_URL=$(echo $1)
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
-
-debug $0
-debug $1
 
 if [[ -z "${DEPLOYED_URL}" ]];
 then fatal "Deployed URL is required";
