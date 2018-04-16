@@ -7,22 +7,26 @@ set -e
 set -o pipefail
 
 DEPLOYED_URL="$1"
+debug "DEPLOYED_URL is ${DEPLOYED_URL}"
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
 
-if [[ -z ${GITHUB_TOKEN} ]]; then fatal "GitHub Token is required"; fi
+if [[ -z "${GITHUB_TOKEN}" ]];
+then fatal "GitHub Token is required";
+else debug "DEBUG:GitHub token detected.";
+fi
 if [[ -z "${DEPLOYED_URL}" ]];
 then fatal "Deployed URL is required";
-else info "Deployed URL: ${DEPLOYED_URL}";
+else debug "Deployed URL: ${DEPLOYED_URL}";
 fi
 if [[ -z "${TRAVIS_REPO_SLUG}" ]];
 then fatal "Travis Repo slug (user/repo) is required";
-else info "Travis Repo slug: ${TRAVIS_REPO_SLUG}";
+else debug "Travis Repo slug: ${TRAVIS_REPO_SLUG}";
 fi
 if [[ -z "${TRAVIS_PULL_REQUEST}" ]];
 then fatal "Travis pull request is required";
-else info "Travis pull request: ${TRAVIS_PULL_REQUEST}";
+else debug "Travis pull request: ${TRAVIS_PULL_REQUEST}";
 fi
 
 info "Checking whether ${TRAVIS_REPO_SLUG} #${TRAVIS_PULL_REQUEST} mentions the deployed URL on GitHub..."
