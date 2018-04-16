@@ -44,11 +44,13 @@ if [[ -z "$(grep "${STAGING_URL}" ${TEMP_CURL_FILE})" ]];
 then
     echo c
     info "Commenting URL to GitHub..."
+    POST_BODY="{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${STAGING_URL}\"}"
+    debug "POST body: \"${POST_BODY}\""
     curl -H "Authorization: token ${GITHUB_TOKEN}" \
-          -X POST \
-          -d "{\"body\": \"Staging instance deployed by Travis CI!\n Running at ${STAGING_URL}\"}" \
+          -X "POST" \
+          -d "${POST_BODY}" \
           -vv \
-          https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments
+          "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
 else
     echo d
     info "Found existing comment mentioning link:\n${STAGING_URL}"
