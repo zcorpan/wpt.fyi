@@ -96,8 +96,6 @@ script:
       docker exec -t -u $(id -u $USER):$(id -g $USER) "${DOCKER_INSTANCE}" make "${MAKE_DEPLOY_TARGET}" BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH} | tee ${TEMP_FILE}
       if [ "${EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(grep -Po 'Deployed to \K.*$' ${TEMP_FILE})
-      echo "Extracted deployed url ${DEPLOYED_URL}"
-      echo ${DEPLOYED_URL} | od -vAn -tax1
       util/deploy-comment.sh "${DEPLOYED_URL}"
       echo yyy
     fi
