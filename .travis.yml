@@ -97,7 +97,9 @@ script:
       if [ "${EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then exit ${EXIT_CODE}; fi
       DEPLOYED_URL=$(grep -Po 'Deployed to \K.*$' ${TEMP_FILE})
       echo "Extracted deployed url ${DEPLOYED_URL}"
+      echo zzz
       util/deploy-comment.sh "${DEPLOYED_URL}"
+      echo yyy
     fi
   - | # Run tests
     if [ "${MAKE_TEST_TARGET}" != "" ]; then

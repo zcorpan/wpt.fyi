@@ -4,9 +4,14 @@
 # from Travis CI. Also see deploy.sh
 
 DEPLOYED_URL="$1"
+echo $0
+echo $1
 
 REPO_DIR="$(dirname "$0")/.."
 source "${REPO_DIR}/util/logging.sh"
+
+debug $0
+debug $1
 
 if [[ -z "${DEPLOYED_URL}" ]];
 then fatal "Deployed URL is required";
@@ -40,7 +45,7 @@ curl -s \
 if [ "${CURL_EXIT_CODE:=${PIPESTATUS[0]}}" != "0" ]; then fatal "Failed to fetch comments" ${CURL_EXIT_CODE}; fi
 
 echo a
-STAGING_LINK=$(cat "${TEMP_CURL_FILE}" | grep "${DEPLOYED_URL}")
+STAGING_LINK=$(grep "${DEPLOYED_URL}" ${TEMP_CURL_FILE})
 echo b
 if [[ -z "${STAGING_LINK}" ]];
 then
@@ -58,3 +63,4 @@ fi
 
 echo e
 sync
+exit 0
