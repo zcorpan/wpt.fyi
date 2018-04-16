@@ -44,8 +44,8 @@ if [[ -z "$(grep "${STAGING_URL}" ${TEMP_CURL_FILE})" ]];
 then
     echo c
     info "Commenting URL to GitHub..."
-    POST_BODY="{\"body\": \"Staging instance deployed by Travis CI!\\n Running at ${STAGING_URL}\"}"
-    debug "POST body: \"${POST_BODY}\""
+    POST_BODY='{"body": "Staging instance deployed by Travis CI!\nRunning at '"${STAGING_URL}"'"}'
+    debug "POST body: ${POST_BODY}"
     curl -H "Authorization: token ${GITHUB_TOKEN}" \
           -X "POST" \
           -d "${POST_BODY}" \
